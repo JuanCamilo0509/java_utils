@@ -1,20 +1,19 @@
 local M = {}
 
 M.getSet = function()
-  -- Define la función get_set antes de usarla
   local get_set = function(type, name)
-    -- Genera el código y quita los puntos y comas innecesarios
+    local format_type = string.gsub(type, ";$", "")
+    local format_name = string.gsub(name, ";$", "")
     local code = string.format([[
-public %s get%s() {
-    return this.%s;
-}
+    public %s get%s() {
+      return this.%s;
+    }
 
-public void set%s(%s %s) {
-    this.%s = %s;
-}
-]], type, name:sub(1, 1):upper() .. name:sub(2), name, name:sub(1, 1):upper() .. name:sub(2), type, name, name, name)
-
-    code = string.gsub(code, ";", "")
+    public void set%s(%s %s) {
+      this.%s = %s;
+    }
+    ]], format_type, format_name:sub(1, 1):upper() .. format_name:sub(2), format_name,
+      format_name:sub(1, 1):upper() .. format_name:sub(2), format_type, format_name, format_name, format_name)
     return code
   end
   local buff = vim.api.nvim_get_current_buf()
@@ -30,12 +29,6 @@ public void set%s(%s %s) {
     table.insert(lines, line)
   end
   vim.api.nvim_buf_set_lines(buff, -1, -1, false, lines)
-end
-
-M.setup = function()
-  vim.keymap.set("n", "zz", function()
-    M.getSet()
-  end, {})
 end
 
 return M
